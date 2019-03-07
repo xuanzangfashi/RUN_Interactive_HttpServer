@@ -2,56 +2,60 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using RunInteractiveHttpServer.HttpServer.HttpHandlers;
 using RunInteractiveHttpServer.Json;
 using RunInteractiveHttpServer.Statics;
 using RunInteractiveHttpServer.TemplateClass;
 
 namespace RunInteractiveHttpServer.HttpServer
 {
-    public delegate string RequestHandleFunction(HttpListenerRequest request, HttpListenerResponse response);
-    public class HttpRequsetHandlleCollection
+    namespace HttpHandlers
     {
-        public RequestHandleFunction postH;
-        public RequestHandleFunction getH;
+        public delegate string RequestHandleFunction(HttpListenerRequest request, HttpListenerResponse response);
+        public class HttpRequsetHandlleCollection
+        {
+            public RequestHandleFunction postH;
+            public RequestHandleFunction getH;
+        }
+
+        public class HttpRequestHandler
+        {
+            private string HttpSubDir;
+            public HttpRequsetHandlleCollection RequestHandles { get; private set; }
+            public HttpRequestHandler()
+            {
+
+            }
+            protected virtual bool OnCreate()
+            {
+                return true;
+            }
+
+
+            protected virtual string GetHandle(HttpListenerRequest request, HttpListenerResponse response)
+            {
+                return "";
+            }
+
+
+            protected virtual string PostHandle(HttpListenerRequest request, HttpListenerResponse response)
+            {
+                return "";
+            }
+
+            public static T CreateHttpRequestHandler<T>(string httpSubDir) where T : HttpRequestHandler, new()
+            {
+                T httpHandlerObj = new T();
+                httpHandlerObj.RequestHandles = new HttpRequsetHandlleCollection();
+                httpHandlerObj.RequestHandles.getH = httpHandlerObj.GetHandle;
+                httpHandlerObj.RequestHandles.postH = httpHandlerObj.PostHandle;
+                HttpListenerManager.Instance.HttpRequestHandlerList.Add(httpHandlerObj);
+                HttpListenerManager.Instance.SubDirHttpRequestHandlerDictionary.Add(httpSubDir, httpHandlerObj);
+                httpHandlerObj.OnCreate();
+                return httpHandlerObj;
+            }
+        }
     }
-
-    public class HttpRequestHandler
-    {
-        private string HttpSubDir;
-        public HttpRequsetHandlleCollection RequestHandles { get; private set; }
-        private HttpRequestHandler()
-        {
-
-        }
-        protected virtual bool OnCreate()
-        {
-            return true;
-        }
-
-
-        protected virtual string GetHandle(HttpListenerRequest request, HttpListenerResponse response)
-        {
-            return "";
-        }
-
-
-        protected virtual string PostHandle(HttpListenerRequest request, HttpListenerResponse response)
-        {
-            return "";
-        }
-
-        public static T CreateHttpRequestHandler<T>(string httpSubDir) where T : HttpRequestHandler, new()
-        {
-            T httpHandlerObj = new T();
-            httpHandlerObj.RequestHandles.getH = httpHandlerObj.GetHandle;
-            httpHandlerObj.RequestHandles.postH = httpHandlerObj.PostHandle;
-            HttpListenerManager.Instance.HttpRequestHandlerList.Add(httpHandlerObj);
-            HttpListenerManager.Instance.SubDirHttpRequestHandlerDictionary.Add(httpSubDir, httpHandlerObj);
-            httpHandlerObj.OnCreate();
-            return httpHandlerObj;
-        }
-    }
-
     public class HttpListenerManager : Singleton<HttpListenerManager>
     {
         //private RequestHandleFunction PostHandle;
@@ -106,7 +110,7 @@ namespace RunInteractiveHttpServer.HttpServer
             Dictionary<string, string> _params = null;
             GetUrlParams(request.Url.Query, out _params);
 
-            
+
             //start handle request
             string returnObj = null;//define return text
             if (_params == null)
@@ -118,7 +122,7 @@ namespace RunInteractiveHttpServer.HttpServer
             }
             if (_params.ContainsKey("method"))
             {
-                if (SubDirHttpRequestHandlerDictionary.Count == 0)
+                if (SubDirHttpRequestHandlerDictionary.Count == 0 || !SubDirHttpRequestHandlerDictionary.ContainsKey(_params["method"]))
                 {
                     var errorStr = "HttpListenerManager does not have any handlers!";
                     Debuger.PrintStr(errorStr, EPRINT_TYPE.WARNING);
@@ -128,7 +132,6 @@ namespace RunInteractiveHttpServer.HttpServer
                 {
                     if (request.HttpMethod == "POST" && request.InputStream != null)//post request
                     {
-
                         returnObj = SubDirHttpRequestHandlerDictionary[_params["method"]].RequestHandles.postH(request, response);
                     }
                     else if (request.HttpMethod == "GET")//get request
@@ -147,7 +150,7 @@ namespace RunInteractiveHttpServer.HttpServer
             ReturnMsgToClient(returnObj, response, guid);
         }
 
-        private void ReturnMsgToClient(string returnObj, HttpListenerResponse response,string guid)
+        private void ReturnMsgToClient(string returnObj, HttpListenerResponse response, string guid)
         {
             var returnByteArr = Encoding.UTF8.GetBytes(returnObj);//set back encoding
             try

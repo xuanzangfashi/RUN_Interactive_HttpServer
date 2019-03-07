@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,20 +62,44 @@ namespace RunInteractiveHttpServer.HttpServer
                 var byteArr = new byte[2048];
                 int readLen = 0;
                 int len = 0;
-                do
+                //do
+                //{
+                //    readLen = inputStream.Read(byteArr, 0, byteArr.Length);
+                //    if (readLen != 0)
+                //    {
+                //        len += readLen;
+                //        byteList.AddRange(byteArr);
+                //
+                //
+                //        if (readLen < 2048)
+                //        {
+                //            byteList.RemoveRange(readLen, 2048 - readLen);
+                //        }
+                //    }
+                //} while (readLen != 0);
+                while(true)
                 {
                     readLen = inputStream.Read(byteArr, 0, byteArr.Length);
-                    if (readLen != 0)
+                    if(readLen > 0)
                     {
                         len += readLen;
                         byteList.AddRange(byteArr);
-                        if (readLen < 2048)
+                        if(readLen < 2048)
                         {
-                            byteList.RemoveRange(readLen, 2048 - readLen);
+                            MemoryStream ms = new MemoryStream();
+                            ms.Write(byteArr, 0, readLen);
+                            byteArr = ms.ToArray();
+                            byteList.AddRange(byteArr);
+                            ms.Flush();
+                            ms.Close();
                         }
-
                     }
-                } while (readLen != 0);
+                    else
+                    {
+                        break;
+                    }
+                }
+
                 if (len == 0)
                 {
                     data = null;
@@ -190,9 +215,10 @@ namespace RunInteractiveHttpServer.HttpServer
         public bool ByteToFile(byte[] byteArray, string fileName, string continueFlag, bool isBinary = true)
         {
             bool result = false;
+            string realFileName = StaticObjects.HttpContentDir + fileName;
             try
             {
-                using (BinaryWriter fs = new BinaryWriter(new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write)))
+                using (BinaryWriter fs = new BinaryWriter(new FileStream(realFileName, FileMode.OpenOrCreate, FileAccess.Write)))
                 {
                     if (continueFlag == "false")
                     {
@@ -232,7 +258,7 @@ namespace RunInteractiveHttpServer.HttpServer
             }
             catch (Exception ex)
             {
-                FileInfo fi = new FileInfo(fileName);
+                FileInfo fi = new FileInfo(realFileName);
                 fi.Delete();
                 fi = null;
                 UsingHttpStreamWorker.Remove(this.OwnerIp);

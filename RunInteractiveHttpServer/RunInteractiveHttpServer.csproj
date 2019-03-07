@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HttpHandlers\HttpHandler_UploadFile.cs" />
     <Compile Include="HttpListenerManager.cs" />
     <Compile Include="HttpStreamWorker.cs" />
     <Compile Include="JsonWorker.cs" />
@@ -73,5 +74,6 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

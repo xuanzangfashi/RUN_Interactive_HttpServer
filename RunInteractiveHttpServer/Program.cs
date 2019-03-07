@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using RunInteractiveHttpServer.Statics;
 using RunInteractiveHttpServer.Sql;
 using RunInteractiveHttpServer.HttpServer;
+using RunInteractiveHttpServer.HttpServer.HttpHandlers;
+using System.Data.OleDb;
+using System.Data;
 
 namespace RunInteractiveHttpServer
 {
@@ -13,7 +16,7 @@ namespace RunInteractiveHttpServer
     {
         static void Main(string[] args)
         {
-            if(!StaticObjects.InitObjects())
+            if (!StaticObjects.InitObjects())
             {
                 Debuger.PrintStr("Init StaticObjects faild!", EPRINT_TYPE.ERROR);
                 Debuger.ExitProgram();
@@ -49,6 +52,8 @@ namespace RunInteractiveHttpServer
             {
                 Debuger.StartForceGC(StaticObjects.ForceGCInterval);
             }
+
+            HttpRequestHandler.CreateHttpRequestHandler<HttpHandler_UploadFile>("upload");
 
             while (true)
             {

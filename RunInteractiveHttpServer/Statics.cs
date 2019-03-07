@@ -6,7 +6,7 @@ namespace RunInteractiveHttpServer.Statics
 {
     public static class StaticObjects
     {
-        public static string ServerConfigXmlPath { get; private set; }// = "./ServerConfig.xml"
+        private static string ServerConfigXmlPath = "./ServerConfig.xml";
         public static string SqlUrl { get; private set; }// = "server=192.168.50.53;port=3306;user=root;password=wuxiaohan; database=runInteractive;";
         public static string HttpContentDir { get; private set; }// = "D:/HttpContent/apache/Apache24/htdocs/RUN_Interactive/";
         public static string HttpContentUrl { get; private set; }// = "http://192.168.50.53:5757/";
