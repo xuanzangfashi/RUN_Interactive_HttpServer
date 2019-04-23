@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RunInteractiveHttpServer.Statics;
-using RunInteractiveHttpServer.Sql;
-using RunInteractiveHttpServer.HttpServer;
-using RunInteractiveHttpServer.HttpServer.HttpHandlers;
-using System.Data.OleDb;
-using System.Data;
+using MyHttpServer.Statics;
+using MyHttpServer.Sql;
+using MyHttpServer.HttpServer;
+using MyHttpServer.HttpServer.HttpHandlers;
 
-namespace RunInteractiveHttpServer
+
+namespace MyHttpServer
 {
     class Program
     {
@@ -53,7 +48,10 @@ namespace RunInteractiveHttpServer
                 Debuger.StartForceGC(StaticObjects.ForceGCInterval);
             }
 
-            HttpRequestHandler.CreateHttpRequestHandler<HttpHandler_UploadFile>("upload");
+            HttpRequestHandler.CreateHttpRequestHandler<HttpHandler_Login>("login");
+            HttpRequestHandler.CreateHttpRequestHandler<HttpHandler_Logout>("logout");
+            HttpRequestHandler.CreateHttpRequestHandler<HttpHandler_EnterMap>("enter_map");
+
 
             while (true)
             {

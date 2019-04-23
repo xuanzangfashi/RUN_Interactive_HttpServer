@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using RunInteractiveHttpServer.Json;
-using RunInteractiveHttpServer.Statics;
+using MyHttpServer.Json;
+using MyHttpServer.Statics;
 
-namespace RunInteractiveHttpServer.HttpServer
+namespace MyHttpServer.HttpServer
 {
     public class HttpStreamWorker
     {

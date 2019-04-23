@@ -2,7 +2,7 @@
 using System.Xml;
 using System.Timers;
 
-namespace RunInteractiveHttpServer.Statics
+namespace MyHttpServer.Statics
 {
     public static class StaticObjects
     {

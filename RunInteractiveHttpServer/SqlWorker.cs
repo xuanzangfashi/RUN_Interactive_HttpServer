@@ -1,8 +1,8 @@
 ﻿using System;
 using MySql.Data.MySqlClient;
-using RunInteractiveHttpServer.Statics;
+using MyHttpServer.Statics;
 
-namespace RunInteractiveHttpServer.Sql
+namespace MyHttpServer.Sql
 {
     public static class SqlWorker
     {
@@ -102,11 +102,11 @@ namespace RunInteractiveHttpServer.Sql
             }
         }
 
-        public static bool MySqlIsExist(string dataBase, string tableName, string colNames, string specificValue)
+        public static bool MySqlIsExist(string dataBase, string tableName, string colName, string specificValue)
         {
-            string command = "select " + colNames;
+            string command = "select " + colName;
 
-            command = command + " from " + dataBase + "." + tableName + " where " + colNames + "=\"" + specificValue + "\"";
+            command = command + " from " + dataBase + "." + tableName + " where " + colName + "=\"" + specificValue + "\"";
             using (var conn = new MySqlConnection(StaticObjects.SqlUrl))
             {
                 conn.Open();
@@ -121,6 +121,81 @@ namespace RunInteractiveHttpServer.Sql
                 return isExist;
             }
         }
+
+        public static bool MySqlIsExist(string dataBase, string tableName, string[] colNames, string[] specificValues)
+        {
+            string command = "select * from " + dataBase + "." + tableName + " where ";
+            for (int i = 0; i < colNames.Length; i++)
+            {
+                command = command + colNames[i] + "=" + "'" + specificValues[i] + "'";
+                if (i != colNames.Length - 1)
+                {
+                    command = command + " and ";
+                }
+            }
+            using (var conn = new MySqlConnection(StaticObjects.SqlUrl))
+            {
+                conn.Open();
+                MySqlCommand CMD = new MySqlCommand(command, conn);
+                MySqlDataReader reader = null;
+                reader = CMD.ExecuteReader();
+                bool isExist = false;
+                while (reader.Read())
+                {
+                    isExist = true;
+                }
+                return isExist;
+            }
+        }
+
+        public static bool MySqlIsExist(string dataBase, string tableName)
+        {
+            string command = "select * from " + dataBase + "." + tableName;
+            bool isExist = false;
+            using (var conn = new MySqlConnection(StaticObjects.SqlUrl))
+            {
+                try
+                {
+                    conn.Open();
+                    MySqlCommand CMD = new MySqlCommand(command, conn);
+                    MySqlDataReader reader = null;
+                    reader = CMD.ExecuteReader();
+
+
+                    isExist = true;
+                }
+                catch
+                {
+                    isExist = false;
+                }
+            }
+            return isExist;
+        }
+
+        public static bool MySqlIsExist(string dataBase, string tableName, string colName)
+        {
+            string command = "select " + colName + " from " + dataBase + "." + tableName;
+            bool isExist = false;
+            using (var conn = new MySqlConnection(StaticObjects.SqlUrl))
+            {
+                try
+                {
+                    conn.Open();
+                    MySqlCommand CMD = new MySqlCommand(command, conn);
+                    MySqlDataReader reader = null;
+                    reader = CMD.ExecuteReader();
+
+
+                    isExist = true;
+                }
+                catch
+                {
+                    isExist = false;
+                }
+            }
+            return isExist;
+        }
+
 
         public static bool MySqlEdit(string dataBase, string tableName, string id, string[] keys, string[] values)
         {
@@ -141,8 +216,7 @@ namespace RunInteractiveHttpServer.Sql
                 index++;
             }
             command = command + tmp + " WHERE id = " + id;
-            using (var conn = new MySqlConnection(StaticObjects.SqlUrl
-))
+            using (var conn = new MySqlConnection(StaticObjects.SqlUrl))
             {
                 conn.Open();
                 MySqlCommand CMD = new MySqlCommand(command, conn);
@@ -150,6 +224,31 @@ namespace RunInteractiveHttpServer.Sql
             }
             return true;
         }
+
+        public static bool MySqlEdit(string dataBase, string tableName, string[] keys, string[] values, int index, string a_d_order)
+        {
+            string command = "update " + dataBase + "." + tableName + " set ";
+            int index_ = 0;
+            string tmp = "";
+            foreach (var i in keys)
+            {
+                tmp = tmp + i + " = " + "\"" + values[index_] + "\"";
+                if (index_ != values.Length - 1)
+                {
+                    tmp = tmp + ",";
+                }
+                index_++;
+            }
+            command = command + tmp + " where " + index.ToString() + " order by id " + a_d_order + " limit 1";
+            using (var conn = new MySqlConnection(StaticObjects.SqlUrl))
+            {
+                conn.Open();
+                MySqlCommand CMD = new MySqlCommand(command, conn);
+                CMD.ExecuteNonQuery();
+            }
+            return true;
+        }
+
 
         public static bool MySqlDelete(string dataBase, string tableName, string[] id)
         {
@@ -172,6 +271,35 @@ namespace RunInteractiveHttpServer.Sql
                 CMD.ExecuteNonQuery();
             }
             return true;
+        }
+
+        public static void MySqlCreateTable(string dataBase, string tableName, string[] colNames)
+        {
+            string command = "create table " + dataBase + "." + tableName + " (id int not null AUTO_INCREMENT unique, ";
+            for (int i = 0; i < colNames.Length; i++)
+            {
+                command = command + colNames[i] + " VARCHAR(45)";
+                command = command + ", ";
+            }
+            command = command + "primary key (id)";
+            command = command + ")";
+            using (var conn = new MySqlConnection(StaticObjects.SqlUrl))
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand(command, conn);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static void MySqlCreateColumn(string dataBase, string tableName, string colName)
+        {
+            string command = "alter table " + dataBase + "." + tableName + " add column " + colName + " VARCHAR(45)";
+            using (var conn = new MySqlConnection(StaticObjects.SqlUrl))
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand(command, conn);
+                cmd.ExecuteNonQuery();
+            }
         }
 
     }

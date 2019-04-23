@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
-using RunInteractiveHttpServer.HttpServer.HttpHandlers;
-using RunInteractiveHttpServer.Json;
-using RunInteractiveHttpServer.Statics;
-using RunInteractiveHttpServer.TemplateClass;
+using MyHttpServer.HttpServer.HttpHandlers;
+using MyHttpServer.Json;
+using MyHttpServer.Statics;
+using MyHttpServer.TemplateClass;
 
-namespace RunInteractiveHttpServer.HttpServer
+namespace MyHttpServer.HttpServer
 {
     namespace HttpHandlers
     {

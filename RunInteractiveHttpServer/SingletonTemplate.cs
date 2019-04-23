@@ -1,4 +1,4 @@
-﻿namespace RunInteractiveHttpServer.TemplateClass
+﻿namespace MyHttpServer.TemplateClass
 {
     public class Singleton<T> where T : new()
     {

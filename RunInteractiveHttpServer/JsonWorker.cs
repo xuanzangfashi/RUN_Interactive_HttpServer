@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
-namespace RunInteractiveHttpServer.Json
+namespace MyHttpServer.Json
 {
     public class JsonObject
     {

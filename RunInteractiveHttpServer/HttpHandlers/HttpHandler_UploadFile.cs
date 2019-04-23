@@ -4,9 +4,9 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using RunInteractiveHttpServer.Json;
+using MyHttpServer.Json;
 
-namespace RunInteractiveHttpServer.HttpServer.HttpHandlers
+namespace MyHttpServer.HttpServer.HttpHandlers
 {
     public class HttpHandler_UploadFile : HttpRequestHandler
     {
@@ -17,7 +17,7 @@ namespace RunInteractiveHttpServer.HttpServer.HttpHandlers
 
         protected override string GetHandle(HttpListenerRequest request, HttpListenerResponse response)
         {
-            return JsonWorker.MakeSampleReturnJson(null, new string[] { "Warning", "Not response for get method in current subdir!", "404" }).jstr;
+            return JsonWorker.MakeSampleReturnJson(null, new string[] { "Warning", "No response for get method in current subdir!", "404" }).jstr;
         }
 
         protected override string PostHandle(HttpListenerRequest request, HttpListenerResponse response)
